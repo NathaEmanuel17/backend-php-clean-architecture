@@ -1,0 +1,8 @@
+/vendor/
+/.env
+/.phpunit.cache/
+/coverage/
+/var/
+/.idea/
+/.vscode/
+.DS_Store
