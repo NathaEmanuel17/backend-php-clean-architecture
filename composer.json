@@ -1,0 +1,33 @@
+{
+  "name": "natha/backend-php-clean-architecture",
+  "description": "Professional PHP backend with Clean Architecture, DDD and TDD",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nathã Emanuel Gonçalves",
+      "email": "nathaemanuel.eng@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.3"
+  },
+  "require-dev": {},
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "autoload": "composer dump-autoload"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {}
+  }
+}
