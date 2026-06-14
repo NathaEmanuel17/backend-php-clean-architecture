@@ -13,6 +13,7 @@
     "php": "^8.3"
   },
   "require-dev": {
+    "phpstan/phpstan": "^2.0",
     "phpunit/phpunit": "^11.0"
   },
   "autoload": {
@@ -31,7 +32,8 @@
     "test:unit": "phpunit --testsuite Unit",
     "test:integration": "phpunit --testsuite Integration",
     "test:feature": "phpunit --testsuite Feature",
-    "test:e2e": "phpunit --testsuite E2E"
+    "test:e2e": "phpunit --testsuite E2E",
+    "analyse": "vendor/bin/phpstan analyse"
   },
   "config": {
     "sort-packages": true,

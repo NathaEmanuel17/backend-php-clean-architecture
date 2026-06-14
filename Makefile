@@ -45,3 +45,6 @@ test-feature:
 
 test-e2e:
 	docker compose exec app composer test:e2e
+
+analyse:
+	docker compose exec app composer analyse
