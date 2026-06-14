@@ -1,4 +1,4 @@
-.PHONY: up down build restart ps logs app composer validate autoload
+.PHONY: up down build restart ps logs app composer validate autoload test test-unit test-integration test-feature test-e2e
 
 up:
 	docker compose up -d
@@ -30,3 +30,18 @@ validate:
 
 autoload:
 	docker compose exec app composer dump-autoload
+
+test:
+	docker compose exec app composer test
+
+test-unit:
+	docker compose exec app composer test:unit
+
+test-integration:
+	docker compose exec app composer test:integration
+
+test-feature:
+	docker compose exec app composer test:feature
+
+test-e2e:
+	docker compose exec app composer test:e2e
