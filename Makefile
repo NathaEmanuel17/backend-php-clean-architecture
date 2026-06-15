@@ -48,3 +48,9 @@ test-e2e:
 
 analyse:
 	docker compose exec app composer analyse
+
+cs:
+	docker compose exec app composer cs
+
+cs-fix:
+	docker compose exec app composer cs:fix
