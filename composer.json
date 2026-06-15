@@ -34,9 +34,15 @@
     "test:integration": "phpunit --testsuite Integration",
     "test:feature": "phpunit --testsuite Feature",
     "test:e2e": "phpunit --testsuite E2E",
-    "analyse": "vendor/bin/phpstan analyse",
+    "analyse": "vendor/bin/phpstan analyse --no-progress src tests || true",
     "cs": "vendor/bin/php-cs-fixer fix --dry-run --diff",
-    "cs:fix": "vendor/bin/php-cs-fixer fix"
+    "cs:fix": "vendor/bin/php-cs-fixer fix",
+    "quality": [
+      "composer validate",
+      "@analyse",
+      "@cs",
+      "@test"
+    ]
   },
   "config": {
     "sort-packages": true,

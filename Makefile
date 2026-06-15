@@ -1,4 +1,4 @@
-.PHONY: up down build restart ps logs app composer validate autoload test test-unit test-integration test-feature test-e2e
+.PHONY: up down build restart ps logs app composer validate autoload test test-unit test-integration test-feature test-e2e quality
 
 up:
 	docker compose up -d
@@ -54,3 +54,6 @@ cs:
 
 cs-fix:
 	docker compose exec app composer cs:fix
+
+quality:
+	docker compose exec app composer quality
