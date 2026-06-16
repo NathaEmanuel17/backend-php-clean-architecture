@@ -34,7 +34,7 @@
     "test:integration": "phpunit --testsuite Integration",
     "test:feature": "phpunit --testsuite Feature",
     "test:e2e": "phpunit --testsuite E2E",
-    "analyse": "vendor/bin/phpstan analyse --no-progress src tests || true",
+    "analyse": "vendor/bin/phpstan analyse --no-progress src tests",
     "cs": "vendor/bin/php-cs-fixer fix --dry-run --diff",
     "cs:fix": "vendor/bin/php-cs-fixer fix",
     "quality": [
