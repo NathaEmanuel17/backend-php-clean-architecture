@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\User\Application\UseCase;
 
+use App\Shared\Domain\Service\UuidGenerator;
 use App\User\Application\Command\CreateUserCommand;
 use App\User\Application\DTO\CreateUserOutput;
 use App\User\Application\UseCase\CreateUserUseCase;
@@ -48,7 +49,14 @@ final class CreateUserUseCaseTest extends TestCase
             }
         };
 
-        $useCase = new CreateUserUseCase($repository, $hasher);
+        $uuidGenerator = new class () implements UuidGenerator {
+            public function generate(): string
+            {
+                return '550e8400-e29b-41d4-a716-446655440001';
+            }
+        };
+
+        $useCase = new CreateUserUseCase($repository, $hasher, $uuidGenerator);
 
         $output = $useCase->execute(
             new CreateUserCommand(
@@ -62,6 +70,7 @@ final class CreateUserUseCaseTest extends TestCase
         self::assertNotNull($repository->savedUser);
         self::assertSame('John Doe', $output->name);
         self::assertSame('john.doe@example.com', $output->email);
+        self::assertSame('550e8400-e29b-41d4-a716-446655440001', $output->id);
     }
 
     public function testShouldThrowExceptionWhenEmailAlreadyExists(): void
@@ -103,7 +112,14 @@ final class CreateUserUseCaseTest extends TestCase
             }
         };
 
-        $useCase = new CreateUserUseCase($repository, $hasher);
+        $uuidGenerator = new class () implements UuidGenerator {
+            public function generate(): string
+            {
+                return '550e8400-e29b-41d4-a716-446655440001';
+            }
+        };
+
+        $useCase = new CreateUserUseCase($repository, $hasher, $uuidGenerator);
 
         $this->expectException(EmailAlreadyExists::class);
 
