@@ -14,7 +14,7 @@ final class User
     private function __construct(
         private readonly UserId $id,
         private UserName $name,
-        private readonly Email $email,
+        private Email $email,
         private readonly PasswordHash $passwordHash,
     ) {
     }
@@ -51,5 +51,10 @@ final class User
     public function changeName(UserName $name): void
     {
         $this->name = $name;
+    }
+
+    public function changeEmail(Email $email): void
+    {
+        $this->email = $email;
     }
 }
