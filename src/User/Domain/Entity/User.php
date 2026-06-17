@@ -9,13 +9,13 @@ use App\User\Domain\ValueObject\PasswordHash;
 use App\User\Domain\ValueObject\UserId;
 use App\User\Domain\ValueObject\UserName;
 
-final readonly class User
+final class User
 {
     private function __construct(
-        private UserId $id,
+        private readonly UserId $id,
         private UserName $name,
-        private Email $email,
-        private PasswordHash $passwordHash,
+        private readonly Email $email,
+        private readonly PasswordHash $passwordHash,
     ) {
     }
 
@@ -46,5 +46,10 @@ final readonly class User
     public function passwordHash(): PasswordHash
     {
         return $this->passwordHash;
+    }
+
+    public function changeName(UserName $name): void
+    {
+        $this->name = $name;
     }
 }
