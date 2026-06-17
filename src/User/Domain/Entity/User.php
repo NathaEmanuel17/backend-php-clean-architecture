@@ -15,7 +15,7 @@ final class User
         private readonly UserId $id,
         private UserName $name,
         private Email $email,
-        private readonly PasswordHash $passwordHash,
+        private PasswordHash $passwordHash,
     ) {
     }
 
@@ -56,5 +56,10 @@ final class User
     public function changeEmail(Email $email): void
     {
         $this->email = $email;
+    }
+
+    public function changePasswordHash(PasswordHash $passwordHash): void
+    {
+        $this->passwordHash = $passwordHash;
     }
 }
