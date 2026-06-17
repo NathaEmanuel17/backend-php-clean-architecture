@@ -29,6 +29,17 @@ final class UserRepositoryTest extends TestCase
             {
                 return $this->users[$id->value()] ?? null;
             }
+
+            public function findByEmail(Email $email): ?User
+            {
+                foreach ($this->users as $user) {
+                    if ($user->email()->value() === $email->value()) {
+                        return $user;
+                    }
+                }
+
+                return null;
+            }
         };
 
         $user = User::create(
@@ -41,5 +52,45 @@ final class UserRepositoryTest extends TestCase
         $repository->save($user);
 
         self::assertSame($user, $repository->findById($user->id()));
+    }
+
+    public function testShouldSaveAndFindUserByEmail(): void
+    {
+        $repository = new class () implements UserRepository {
+            /** @var array<string, User> */
+            private array $users = [];
+
+            public function save(User $user): void
+            {
+                $this->users[$user->id()->value()] = $user;
+            }
+
+            public function findById(UserId $id): ?User
+            {
+                return $this->users[$id->value()] ?? null;
+            }
+
+            public function findByEmail(Email $email): ?User
+            {
+                foreach ($this->users as $user) {
+                    if ($user->email()->value() === $email->value()) {
+                        return $user;
+                    }
+                }
+
+                return null;
+            }
+        };
+
+        $user = User::create(
+            UserId::fromString('550e8400-e29b-41d4-a716-446655440000'),
+            UserName::fromString('John Doe'),
+            Email::fromString('john.doe@example.com'),
+            PasswordHash::fromString(password_hash('StrongPassword123!', PASSWORD_ARGON2ID)),
+        );
+
+        $repository->save($user);
+
+        self::assertSame($user, $repository->findByEmail($user->email()));
     }
 }
