@@ -112,4 +112,29 @@ final class PostgresUserRepositoryTest extends TestCase
         self::assertSame($user->name()->value(), $foundUser->name()->value());
         self::assertSame($user->email()->value(), $foundUser->email()->value());
     }
+
+    public function testShouldUpdateUserWhenSavingExistingId(): void
+    {
+        $repository = new PostgresUserRepository($this->pdo);
+
+        $user = User::create(
+            UserId::fromString('550e8400-e29b-41d4-a716-446655440000'),
+            UserName::fromString('John Doe'),
+            Email::fromString('john.doe@example.com'),
+            PasswordHash::fromString(
+                password_hash('StrongPassword123!', PASSWORD_ARGON2ID)
+            ),
+        );
+
+        $repository->save($user);
+
+        $user->changeName(UserName::fromString('Jane Doe'));
+
+        $repository->save($user);
+
+        $foundUser = $repository->findById($user->id());
+
+        self::assertNotNull($foundUser);
+        self::assertSame('Jane Doe', $foundUser->name()->value());
+    }
 }
