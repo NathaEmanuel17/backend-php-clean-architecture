@@ -47,57 +47,50 @@ final readonly class PostgresUserRepository implements UserRepository
 
     public function findById(UserId $id): ?User
     {
-        $statement = $this->pdo->prepare(
+        return $this->findOneBy(
             '
-            SELECT
-                id,
-                name,
-                email,
-                password_hash
-            FROM users
-            WHERE id = :id
-            AND deleted_at IS NULL
-            '
+        SELECT
+            id,
+            name,
+            email,
+            password_hash
+        FROM users
+        WHERE id = :id
+          AND deleted_at IS NULL
+        ',
+            [
+                'id' => $id->value(),
+            ]
         );
-
-        $statement->execute([
-            'id' => $id->value(),
-        ]);
-
-        $row = $statement->fetch(PDO::FETCH_ASSOC);
-
-        if (!is_array($row)) {
-            return null;
-        }
-
-        /** @var array{
-         *     id: string,
-         *     name: string,
-         *     email: string,
-         *     password_hash: string
-         * } $row
-         */
-        return $this->userMapper->toEntity($row);
     }
 
     public function findByEmail(Email $email): ?User
     {
-        $statement = $this->pdo->prepare(
+        return $this->findOneBy(
             '
-            SELECT
-                id,
-                name,
-                email,
-                password_hash
-            FROM users
-            WHERE email = :email
-            AND deleted_at IS NULL
-            '
+        SELECT
+            id,
+            name,
+            email,
+            password_hash
+        FROM users
+        WHERE email = :email
+          AND deleted_at IS NULL
+        ',
+            [
+                'email' => $email->value(),
+            ]
         );
+    }
 
-        $statement->execute([
-            'email' => $email->value(),
-        ]);
+    /**
+     * @param array<string, string> $parameters
+     */
+    private function findOneBy(string $sql, array $parameters): ?User
+    {
+        $statement = $this->pdo->prepare($sql);
+
+        $statement->execute($parameters);
 
         /** @var array<string, string>|false $row */
         $row = $statement->fetch(PDO::FETCH_ASSOC);
