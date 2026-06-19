@@ -82,6 +82,37 @@ final readonly class PostgresUserRepository implements UserRepository
 
     public function findByEmail(Email $email): ?User
     {
-        return null;
+        $statement = $this->pdo->prepare(
+            '
+            SELECT
+                id,
+                name,
+                email,
+                password_hash
+            FROM users
+            WHERE email = :email
+            AND deleted_at IS NULL
+            '
+        );
+
+        $statement->execute([
+            'email' => $email->value(),
+        ]);
+
+        /** @var array<string, string>|false $row */
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($row === false) {
+            return null;
+        }
+
+        /** @var array{
+         *     id: string,
+         *     name: string,
+         *     email: string,
+         *     password_hash: string
+         * } $row
+         */
+        return $this->userMapper->toEntity($row);
     }
 }
