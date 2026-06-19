@@ -8,12 +8,14 @@ use App\User\Domain\Entity\User;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Domain\ValueObject\Email;
 use App\User\Domain\ValueObject\UserId;
+use App\User\Infrastructure\Mapper\UserMapper;
 use PDO;
 
 final readonly class PostgresUserRepository implements UserRepository
 {
     public function __construct(
         private PDO $pdo,
+        private UserMapper $userMapper = new UserMapper(),
     ) {
     }
 
@@ -45,7 +47,37 @@ final readonly class PostgresUserRepository implements UserRepository
 
     public function findById(UserId $id): ?User
     {
-        return null;
+        $statement = $this->pdo->prepare(
+            '
+            SELECT
+                id,
+                name,
+                email,
+                password_hash
+            FROM users
+            WHERE id = :id
+            AND deleted_at IS NULL
+            '
+        );
+
+        $statement->execute([
+            'id' => $id->value(),
+        ]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        /** @var array{
+         *     id: string,
+         *     name: string,
+         *     email: string,
+         *     password_hash: string
+         * } $row
+         */
+        return $this->userMapper->toEntity($row);
     }
 
     public function findByEmail(Email $email): ?User
