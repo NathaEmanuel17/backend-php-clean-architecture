@@ -58,10 +58,10 @@ final class CreateUserUseCaseTest extends TestCase
             'id' => $output->id,
         ]);
 
-        self::assertSame(
-            'john.doe@example.com',
-            $statement->fetchColumn()
-        );
+        $email = $statement->fetchColumn();
+
+        self::assertIsString($email);
+        self::assertSame('john.doe@example.com', $email);
     }
 
     public function testShouldPreventDuplicatedEmailUsingPostgresRepository(): void
