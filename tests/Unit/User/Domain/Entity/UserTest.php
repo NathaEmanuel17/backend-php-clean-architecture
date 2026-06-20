@@ -177,4 +177,38 @@ final class UserTest extends TestCase
             $user->createdAt()
         );
     }
+
+    public function testShouldUpdateUpdatedAtWhenChangingName(): void
+    {
+        $user = User::create(
+            UserId::fromString(
+                '550e8400-e29b-41d4-a716-446655440000'
+            ),
+            UserName::fromString(
+                'John Doe'
+            ),
+            Email::fromString(
+                'john.doe@example.com'
+            ),
+            PasswordHash::fromString(
+                password_hash(
+                    'StrongPassword123!',
+                    PASSWORD_ARGON2ID
+                )
+            ),
+        );
+
+        $originalUpdatedAt = $user->updatedAt();
+
+        sleep(1);
+
+        $user->changeName(
+            UserName::fromString('Jane Doe')
+        );
+
+        self::assertGreaterThan(
+            $originalUpdatedAt,
+            $user->updatedAt()
+        );
+    }
 }

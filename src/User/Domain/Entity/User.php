@@ -18,6 +18,7 @@ final class User
         private Email $email,
         private PasswordHash $passwordHash,
         private readonly DateTimeImmutable $createdAt,
+        private DateTimeImmutable $updatedAt,
     ) {
     }
 
@@ -27,12 +28,15 @@ final class User
         Email $email,
         PasswordHash $passwordHash,
     ): self {
+        $now = new DateTimeImmutable();
+
         return new self(
             $id,
             $name,
             $email,
             $passwordHash,
-            new DateTimeImmutable()
+            $now,
+            $now,
         );
     }
 
@@ -61,18 +65,32 @@ final class User
         return $this->createdAt;
     }
 
+    public function updatedAt(): DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
     public function changeName(UserName $name): void
     {
         $this->name = $name;
+        $this->touch();
     }
 
     public function changeEmail(Email $email): void
     {
         $this->email = $email;
+        $this->touch();
     }
 
-    public function changePasswordHash(PasswordHash $passwordHash): void
-    {
+    public function changePasswordHash(
+        PasswordHash $passwordHash
+    ): void {
         $this->passwordHash = $passwordHash;
+        $this->touch();
+    }
+
+    private function touch(): void
+    {
+        $this->updatedAt = new DateTimeImmutable();
     }
 }
