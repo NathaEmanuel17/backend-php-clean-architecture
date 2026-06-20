@@ -8,6 +8,7 @@ use App\User\Domain\ValueObject\Email;
 use App\User\Domain\ValueObject\PasswordHash;
 use App\User\Domain\ValueObject\UserId;
 use App\User\Domain\ValueObject\UserName;
+use DateTimeImmutable;
 
 final class User
 {
@@ -16,6 +17,7 @@ final class User
         private UserName $name,
         private Email $email,
         private PasswordHash $passwordHash,
+        private readonly DateTimeImmutable $createdAt,
     ) {
     }
 
@@ -25,7 +27,13 @@ final class User
         Email $email,
         PasswordHash $passwordHash,
     ): self {
-        return new self($id, $name, $email, $passwordHash);
+        return new self(
+            $id,
+            $name,
+            $email,
+            $passwordHash,
+            new DateTimeImmutable()
+        );
     }
 
     public function id(): UserId
@@ -46,6 +54,11 @@ final class User
     public function passwordHash(): PasswordHash
     {
         return $this->passwordHash;
+    }
+
+    public function createdAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 
     public function changeName(UserName $name): void
