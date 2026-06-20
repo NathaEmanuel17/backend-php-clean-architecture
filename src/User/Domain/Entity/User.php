@@ -19,6 +19,7 @@ final class User
         private PasswordHash $passwordHash,
         private readonly DateTimeImmutable $createdAt,
         private DateTimeImmutable $updatedAt,
+        private ?DateTimeImmutable $deletedAt,
     ) {
     }
 
@@ -37,6 +38,7 @@ final class User
             $passwordHash,
             $now,
             $now,
+            null,
         );
     }
 
@@ -70,6 +72,16 @@ final class User
         return $this->updatedAt;
     }
 
+    public function deletedAt(): ?DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deletedAt !== null;
+    }
+
     public function changeName(UserName $name): void
     {
         $this->name = $name;
@@ -87,6 +99,14 @@ final class User
     ): void {
         $this->passwordHash = $passwordHash;
         $this->touch();
+    }
+
+    public function delete(): void
+    {
+        $now = new DateTimeImmutable();
+
+        $this->deletedAt = $now;
+        $this->updatedAt = $now;
     }
 
     private function touch(): void

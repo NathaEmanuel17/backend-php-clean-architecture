@@ -211,4 +211,24 @@ final class UserTest extends TestCase
             $user->updatedAt()
         );
     }
+
+    public function testShouldSoftDeleteUser(): void
+    {
+        $user = User::create(
+            UserId::fromString('550e8400-e29b-41d4-a716-446655440000'),
+            UserName::fromString('John Doe'),
+            Email::fromString('john.doe@example.com'),
+            PasswordHash::fromString(
+                password_hash('StrongPassword123!', PASSWORD_ARGON2ID)
+            ),
+        );
+
+        self::assertNull($user->deletedAt());
+        self::assertFalse($user->isDeleted());
+
+        $user->delete();
+
+        self::assertInstanceOf(DateTimeImmutable::class, $user->deletedAt());
+        self::assertTrue($user->isDeleted());
+    }
 }
