@@ -22,25 +22,25 @@ final readonly class PostgresUserRepository implements UserRepository
     public function save(User $user): void
     {
         $sql = <<<SQL
-        INSERT INTO users (
-            id,
-            name,
-            email,
-            password_hash,
-            updated_at
-        ) VALUES (
-            :id,
-            :name,
-            :email,
-            :password_hash,
-            CURRENT_TIMESTAMP
-        )
-        ON CONFLICT (id) DO UPDATE SET
-            name = EXCLUDED.name,
-            email = EXCLUDED.email,
-            password_hash = EXCLUDED.password_hash,
-            updated_at = CURRENT_TIMESTAMP
-    SQL;
+            INSERT INTO users (
+                id,
+                name,
+                email,
+                password_hash,
+                updated_at
+            ) VALUES (
+                :id,
+                :name,
+                :email,
+                :password_hash,
+                CURRENT_TIMESTAMP
+            )
+            ON CONFLICT (id) DO UPDATE SET
+                name = EXCLUDED.name,
+                email = EXCLUDED.email,
+                password_hash = EXCLUDED.password_hash,
+                updated_at = CURRENT_TIMESTAMP
+        SQL;
 
         $statement = $this->pdo->prepare($sql);
 
