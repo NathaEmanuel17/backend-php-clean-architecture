@@ -109,6 +109,26 @@ final class User
         $this->updatedAt = $now;
     }
 
+    public static function reconstitute(
+        UserId $id,
+        UserName $name,
+        Email $email,
+        PasswordHash $passwordHash,
+        DateTimeImmutable $createdAt,
+        DateTimeImmutable $updatedAt,
+        ?DateTimeImmutable $deletedAt,
+    ): self {
+        return new self(
+            $id,
+            $name,
+            $email,
+            $passwordHash,
+            $createdAt,
+            $updatedAt,
+            $deletedAt,
+        );
+    }
+
     private function touch(): void
     {
         $this->updatedAt = new DateTimeImmutable();

@@ -27,19 +27,24 @@ final readonly class PostgresUserRepository implements UserRepository
                 name,
                 email,
                 password_hash,
-                updated_at
+                created_at,
+                updated_at,
+                deleted_at
             ) VALUES (
                 :id,
                 :name,
                 :email,
                 :password_hash,
-                CURRENT_TIMESTAMP
+                :created_at,
+                :updated_at,
+                :deleted_at
             )
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name,
                 email = EXCLUDED.email,
                 password_hash = EXCLUDED.password_hash,
-                updated_at = CURRENT_TIMESTAMP
+                updated_at = EXCLUDED.updated_at,
+                deleted_at = EXCLUDED.deleted_at
         SQL;
 
         $statement = $this->pdo->prepare($sql);
@@ -49,6 +54,9 @@ final readonly class PostgresUserRepository implements UserRepository
             'name' => $user->name()->value(),
             'email' => $user->email()->value(),
             'password_hash' => $user->passwordHash()->value(),
+            'created_at' => $user->createdAt()->format('Y-m-d H:i:s.u'),
+            'updated_at' => $user->updatedAt()->format('Y-m-d H:i:s.u'),
+            'deleted_at' => $user->deletedAt()?->format('Y-m-d H:i:s.u'),
         ]);
     }
 
@@ -56,15 +64,18 @@ final readonly class PostgresUserRepository implements UserRepository
     {
         return $this->findOneBy(
             '
-        SELECT
-            id,
-            name,
-            email,
-            password_hash
-        FROM users
-        WHERE id = :id
-          AND deleted_at IS NULL
-        ',
+            SELECT
+                id,
+                name,
+                email,
+                password_hash,
+                created_at,
+                updated_at,
+                deleted_at
+            FROM users
+            WHERE id = :id
+              AND deleted_at IS NULL
+            ',
             [
                 'id' => $id->value(),
             ]
@@ -75,15 +86,18 @@ final readonly class PostgresUserRepository implements UserRepository
     {
         return $this->findOneBy(
             '
-        SELECT
-            id,
-            name,
-            email,
-            password_hash
-        FROM users
-        WHERE email = :email
-          AND deleted_at IS NULL
-        ',
+            SELECT
+                id,
+                name,
+                email,
+                password_hash,
+                created_at,
+                updated_at,
+                deleted_at
+            FROM users
+            WHERE email = :email
+              AND deleted_at IS NULL
+            ',
             [
                 'email' => $email->value(),
             ]
@@ -99,7 +113,7 @@ final readonly class PostgresUserRepository implements UserRepository
 
         $statement->execute($parameters);
 
-        /** @var array<string, string>|false $row */
+        /** @var array<string, string|null>|false $row */
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
         if ($row === false) {
@@ -110,7 +124,10 @@ final readonly class PostgresUserRepository implements UserRepository
          *     id: string,
          *     name: string,
          *     email: string,
-         *     password_hash: string
+         *     password_hash: string,
+         *     created_at: string,
+         *     updated_at: string,
+         *     deleted_at: string|null
          * } $row
          */
         return $this->userMapper->toEntity($row);

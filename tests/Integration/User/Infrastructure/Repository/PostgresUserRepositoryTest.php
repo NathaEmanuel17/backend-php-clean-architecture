@@ -137,4 +137,27 @@ final class PostgresUserRepositoryTest extends TestCase
         self::assertNotNull($foundUser);
         self::assertSame('Jane Doe', $foundUser->name()->value());
     }
+
+    public function testShouldPersistUserTimestamps(): void
+    {
+        $repository = new PostgresUserRepository($this->pdo);
+
+        $user = User::create(
+            UserId::fromString('550e8400-e29b-41d4-a716-446655440000'),
+            UserName::fromString('John Doe'),
+            Email::fromString('john.doe@example.com'),
+            PasswordHash::fromString(
+                password_hash('StrongPassword123!', PASSWORD_ARGON2ID)
+            ),
+        );
+
+        $repository->save($user);
+
+        $foundUser = $repository->findById($user->id());
+
+        self::assertNotNull($foundUser);
+        self::assertEquals($user->createdAt(), $foundUser->createdAt());
+        self::assertEquals($user->updatedAt(), $foundUser->updatedAt());
+        self::assertNull($foundUser->deletedAt());
+    }
 }
