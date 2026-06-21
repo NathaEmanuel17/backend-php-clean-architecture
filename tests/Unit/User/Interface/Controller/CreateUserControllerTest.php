@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\User\Interface\Controller;
 
 use App\Shared\Domain\Service\UuidGenerator;
+use App\Shared\Interface\Exception\ExceptionResponseFactory;
 use App\Shared\Interface\Response\JsonResponse;
 use App\Shared\Interface\Response\ProblemJsonResponse;
 use App\User\Application\UseCase\CreateUserUseCase;
@@ -67,7 +68,8 @@ final class CreateUserControllerTest extends TestCase
                 $repository,
                 $hasher,
                 $uuidGenerator,
-            )
+            ),
+            new ExceptionResponseFactory(),
         );
 
         $response = $controller->__invoke([
@@ -154,7 +156,8 @@ final class CreateUserControllerTest extends TestCase
                 $repository,
                 $hasher,
                 $uuidGenerator,
-            )
+            ),
+            new ExceptionResponseFactory(),
         );
 
         $response = $controller->__invoke([
