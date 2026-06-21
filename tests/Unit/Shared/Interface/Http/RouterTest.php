@@ -55,4 +55,50 @@ final class RouterTest extends TestCase
             $response->content()
         );
     }
+
+    public function testShouldDispatchPutRoute(): void
+    {
+        $router = new Router();
+
+        $router->put(
+            '/users',
+            static fn (Request $request): JsonResponse =>
+                new JsonResponse(['message' => 'updated'])
+        );
+
+        $response = $router->dispatch(
+            new Request(
+                method: 'PUT',
+                path: '/users',
+            )
+        );
+
+        self::assertSame(
+            '{"message":"updated"}',
+            $response->content()
+        );
+    }
+
+    public function testShouldDispatchDeleteRoute(): void
+    {
+        $router = new Router();
+
+        $router->delete(
+            '/users',
+            static fn (Request $request): JsonResponse =>
+                new JsonResponse(['message' => 'deleted'])
+        );
+
+        $response = $router->dispatch(
+            new Request(
+                method: 'DELETE',
+                path: '/users',
+            )
+        );
+
+        self::assertSame(
+            '{"message":"deleted"}',
+            $response->content()
+        );
+    }
 }

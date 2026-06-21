@@ -28,6 +28,20 @@ final class Router
         $this->routes['GET ' . $path] = $handler;
     }
 
+    public function put(
+        string $path,
+        Closure $handler
+    ): void {
+        $this->routes['PUT ' . $path] = $handler;
+    }
+
+    public function delete(
+        string $path,
+        Closure $handler
+    ): void {
+        $this->routes['DELETE ' . $path] = $handler;
+    }
+
     public function dispatch(Request $request): JsonResponse|ProblemJsonResponse
     {
         $key = $request->method() . ' ' . $request->path();
