@@ -6,6 +6,7 @@ namespace App\User\Application\UseCase;
 
 use App\User\Application\Command\UpdateUserCommand;
 use App\User\Application\DTO\UserOutput;
+use App\User\Domain\Exception\EmailAlreadyExists;
 use App\User\Domain\Exception\UserNotFound;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Domain\Service\PasswordHasher;
@@ -31,13 +32,22 @@ final readonly class UpdateUserUseCase
             throw new UserNotFound();
         }
 
+        $email = Email::fromString($command->email);
+
+        $existingUserWithEmail = $this->userRepository->findByEmail($email);
+
+        if (
+            $existingUserWithEmail !== null
+            && $existingUserWithEmail->id()->value() !== $user->id()->value()
+        ) {
+            throw new EmailAlreadyExists();
+        }
+
         $user->changeName(
             UserName::fromString($command->name)
         );
 
-        $user->changeEmail(
-            Email::fromString($command->email)
-        );
+        $user->changeEmail($email);
 
         $user->changePasswordHash(
             $this->passwordHasher->hash($command->plainPassword)

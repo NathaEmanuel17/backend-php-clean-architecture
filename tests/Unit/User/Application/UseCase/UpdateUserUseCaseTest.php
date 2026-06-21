@@ -8,6 +8,7 @@ use App\User\Application\Command\UpdateUserCommand;
 use App\User\Application\DTO\UserOutput;
 use App\User\Application\UseCase\UpdateUserUseCase;
 use App\User\Domain\Entity\User;
+use App\User\Domain\Exception\EmailAlreadyExists;
 use App\User\Domain\Exception\UserNotFound;
 use App\User\Domain\Repository\UserRepository;
 use App\User\Domain\Service\PasswordHasher;
@@ -119,6 +120,114 @@ final class UpdateUserUseCaseTest extends TestCase
                 name: 'Jane Doe',
                 email: 'jane.doe@example.com',
                 plainPassword: 'NewStrongPassword123!',
+            )
+        );
+    }
+
+    public function testShouldThrowExceptionWhenEmailAlreadyExists(): void
+    {
+        $existingUser = User::create(
+            UserId::fromString(
+                '550e8400-e29b-41d4-a716-446655440000'
+            ),
+            UserName::fromString(
+                'Existing User'
+            ),
+            Email::fromString(
+                'jane.doe@example.com'
+            ),
+            PasswordHash::fromString(
+                password_hash(
+                    'Password123!',
+                    PASSWORD_ARGON2ID
+                )
+            ),
+        );
+
+        $userToUpdate = User::create(
+            UserId::fromString(
+                '6fa459ea-ee8a-4ca4-894e-db77e160355e'
+            ),
+            UserName::fromString(
+                'John Doe'
+            ),
+            Email::fromString(
+                'john.doe@example.com'
+            ),
+            PasswordHash::fromString(
+                password_hash(
+                    'Password123!',
+                    PASSWORD_ARGON2ID
+                )
+            ),
+        );
+
+        $repository = new class (
+            $existingUser,
+            $userToUpdate
+        ) implements UserRepository {
+            public function __construct(
+                private User $existingUser,
+                private User $userToUpdate,
+            ) {
+            }
+
+            public function save(User $user): void
+            {
+            }
+
+            public function findById(
+                UserId $id
+            ): ?User {
+                return $id->value() ===
+                    $this->userToUpdate->id()->value()
+                    ? $this->userToUpdate
+                    : null;
+            }
+
+            public function findByEmail(
+                Email $email
+            ): ?User {
+                return $email->value() ===
+                    'jane.doe@example.com'
+                    ? $this->existingUser
+                    : null;
+            }
+
+            public function findAll(): array
+            {
+                return [];
+            }
+        };
+
+        $hasher = new class () implements PasswordHasher {
+            public function hash(
+                string $plainPassword
+            ): PasswordHash {
+                return PasswordHash::fromString(
+                    password_hash(
+                        $plainPassword,
+                        PASSWORD_ARGON2ID
+                    )
+                );
+            }
+        };
+
+        $useCase = new UpdateUserUseCase(
+            $repository,
+            $hasher
+        );
+
+        $this->expectException(
+            EmailAlreadyExists::class
+        );
+
+        $useCase->execute(
+            new UpdateUserCommand(
+                id: '6fa459ea-ee8a-4ca4-894e-db77e160355e',
+                name: 'John Doe',
+                email: 'jane.doe@example.com',
+                plainPassword: 'NewPassword123!',
             )
         );
     }
