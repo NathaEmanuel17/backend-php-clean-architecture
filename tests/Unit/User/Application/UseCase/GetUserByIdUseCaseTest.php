@@ -45,6 +45,14 @@ final class GetUserByIdUseCaseTest extends TestCase
             {
                 return null;
             }
+
+            /**
+                 * @return list<User>
+                 */
+                public function findAll(): array
+                {
+                    return [];
+                }
         };
 
         $useCase = new GetUserByIdUseCase($repository);
@@ -72,6 +80,14 @@ final class GetUserByIdUseCaseTest extends TestCase
             public function findByEmail(Email $email): ?User
             {
                 return null;
+            }
+
+            /**
+             * @return list<User>
+             */
+            public function findAll(): array
+            {
+                return [];
             }
         };
 

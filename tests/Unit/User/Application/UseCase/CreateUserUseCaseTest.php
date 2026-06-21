@@ -38,6 +38,14 @@ final class CreateUserUseCaseTest extends TestCase
             {
                 return null;
             }
+
+            /**
+             * @return list<User>
+             */
+            public function findAll(): array
+            {
+                return [];
+            }
         };
 
         $hasher = new class () implements PasswordHasher {
@@ -100,6 +108,14 @@ final class CreateUserUseCaseTest extends TestCase
             public function findByEmail(Email $email): User
             {
                 return $this->existingUser;
+            }
+
+            /**
+             * @return list<User>
+             */
+            public function findAll(): array
+            {
+                return [];
             }
         };
 

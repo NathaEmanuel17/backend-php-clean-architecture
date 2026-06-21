@@ -40,6 +40,14 @@ final class UserRepositoryTest extends TestCase
 
                 return null;
             }
+
+            /**
+ * @return list<User>
+ */
+            public function findAll(): array
+            {
+                return [];
+            }
         };
 
         $user = User::create(
@@ -79,6 +87,14 @@ final class UserRepositoryTest extends TestCase
                 }
 
                 return null;
+            }
+
+            /**
+             * @return list<User>
+             */
+            public function findAll(): array
+            {
+                return [];
             }
         };
 

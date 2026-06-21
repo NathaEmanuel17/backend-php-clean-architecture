@@ -132,4 +132,47 @@ final readonly class PostgresUserRepository implements UserRepository
          */
         return $this->userMapper->toEntity($row);
     }
+
+    /**
+ * @return list<User>
+ */
+    public function findAll(): array
+    {
+        $statement = $this->pdo->query(
+            '
+        SELECT
+            id,
+            name,
+            email,
+            password_hash,
+            created_at,
+            updated_at,
+            deleted_at
+        FROM users
+        WHERE deleted_at IS NULL
+        ORDER BY created_at DESC
+        '
+        );
+
+        if ($statement === false) {
+            return [];
+        }
+
+        /** @var list<array{
+         *     id: string,
+         *     name: string,
+         *     email: string,
+         *     password_hash: string,
+         *     created_at: string,
+         *     updated_at: string,
+         *     deleted_at: string|null
+         * }> $rows
+         */
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(
+            fn (array $row): User => $this->userMapper->toEntity($row),
+            $rows
+        );
+    }
 }
