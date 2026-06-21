@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\User\Interface\Controller;
+
+use App\Shared\Interface\Response\JsonResponse;
+use App\User\Application\Command\CreateUserCommand;
+use App\User\Application\UseCase\CreateUserUseCase;
+use App\User\Interface\Request\CreateUserRequest;
+
+final readonly class CreateUserController
+{
+    public function __construct(
+        private CreateUserUseCase $createUserUseCase,
+    ) {
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    public function __invoke(array $payload): JsonResponse
+    {
+        $request = CreateUserRequest::fromArray($payload);
+
+        $output = $this->createUserUseCase->execute(
+            new CreateUserCommand(
+                name: $request->name,
+                email: $request->email,
+                plainPassword: $request->password,
+            )
+        );
+
+        return new JsonResponse(
+            data: [
+                'id' => $output->id,
+                'name' => $output->name,
+                'email' => $output->email,
+            ],
+            statusCode: 201,
+        );
+    }
+}
