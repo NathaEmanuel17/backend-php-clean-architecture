@@ -30,4 +30,29 @@ final class RouterTest extends TestCase
         self::assertSame(200, $response->statusCode());
         self::assertSame('{"message":"created"}', $response->content());
     }
+
+    public function testShouldDispatchGetRoute(): void
+    {
+        $router = new Router();
+
+        $router->get(
+            '/users',
+            static fn (Request $request): JsonResponse =>
+            new JsonResponse([
+                'message' => 'ok',
+            ])
+        );
+
+        $response = $router->dispatch(
+            new Request(
+                method: 'GET',
+                path: '/users',
+            )
+        );
+
+        self::assertSame(
+            '{"message":"ok"}',
+            $response->content()
+        );
+    }
 }

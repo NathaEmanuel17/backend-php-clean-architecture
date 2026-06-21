@@ -21,6 +21,13 @@ final class Router
         $this->routes['POST ' . $path] = $handler;
     }
 
+    public function get(
+        string $path,
+        Closure $handler
+    ): void {
+        $this->routes['GET ' . $path] = $handler;
+    }
+
     public function dispatch(Request $request): JsonResponse|ProblemJsonResponse
     {
         $key = $request->method() . ' ' . $request->path();
