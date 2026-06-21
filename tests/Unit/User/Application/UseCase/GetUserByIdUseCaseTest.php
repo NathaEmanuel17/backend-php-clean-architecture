@@ -38,6 +38,10 @@ final class GetUserByIdUseCaseTest extends TestCase
 
             public function findById(UserId $id): ?User
             {
+                if ($id->value() !== $this->user->id()->value()) {
+                    return null;
+                }
+
                 return $this->user;
             }
 
@@ -49,10 +53,10 @@ final class GetUserByIdUseCaseTest extends TestCase
             /**
                  * @return list<User>
                  */
-                public function findAll(): array
-                {
-                    return [];
-                }
+            public function findAll(): array
+            {
+                return [];
+            }
         };
 
         $useCase = new GetUserByIdUseCase($repository);
