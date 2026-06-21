@@ -101,4 +101,29 @@ final class RouterTest extends TestCase
             $response->content()
         );
     }
+
+    public function testShouldDispatchRouteWithParameter(): void
+    {
+        $router = new Router();
+
+        $router->get(
+            '/users/{id}',
+            static fn (Request $request): JsonResponse =>
+                new JsonResponse([
+                    'id' => $request->param('id'),
+                ])
+        );
+
+        $response = $router->dispatch(
+            new Request(
+                method: 'GET',
+                path: '/users/550e8400-e29b-41d4-a716-446655440000',
+            )
+        );
+
+        self::assertSame(
+            '{"id":"550e8400-e29b-41d4-a716-446655440000"}',
+            $response->content()
+        );
+    }
 }

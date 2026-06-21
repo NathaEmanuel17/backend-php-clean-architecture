@@ -44,13 +44,81 @@ final class Router
 
     public function dispatch(Request $request): JsonResponse|ProblemJsonResponse
     {
-        $key = $request->method() . ' ' . $request->path();
+        $exactKey = $request->method() . ' ' . $request->path();
 
-        if (!isset($this->routes[$key])) {
-            throw new InvalidArgumentException('Route not found.');
+        if (isset($this->routes[$exactKey])) {
+            return $this->execute(
+                $this->routes[$exactKey],
+                $request
+            );
         }
 
-        $response = $this->routes[$key]($request);
+        foreach ($this->routes as $routeKey => $handler) {
+            [$method, $routePath] = explode(' ', $routeKey, 2);
+
+            if ($method !== $request->method()) {
+                continue;
+            }
+
+            $params = $this->matchRoute(
+                $routePath,
+                $request->path()
+            );
+
+            if ($params === null) {
+                continue;
+            }
+
+            return $this->execute(
+                $handler,
+                $request->withParams($params)
+            );
+        }
+
+        throw new InvalidArgumentException('Route not found.');
+    }
+
+    /**
+     * @return array<string, string>|null
+     */
+    private function matchRoute(string $routePath, string $requestPath): ?array
+    {
+        $routeParts = explode('/', trim($routePath, '/'));
+        $requestParts = explode('/', trim($requestPath, '/'));
+
+        if (count($routeParts) !== count($requestParts)) {
+            return null;
+        }
+
+        $params = [];
+
+        foreach ($routeParts as $index => $routePart) {
+            $requestPart = $requestParts[$index];
+
+            if (
+                str_starts_with($routePart, '{')
+                && str_ends_with($routePart, '}')
+            ) {
+                $paramName = trim($routePart, '{}');
+
+                $params[$paramName] = $requestPart;
+
+                continue;
+            }
+
+            if ($routePart !== $requestPart) {
+                return null;
+            }
+        }
+
+        return $params;
+    }
+
+    private function execute(
+        Closure $handler,
+        Request $request
+    ): JsonResponse|ProblemJsonResponse {
+        $response = $handler($request);
 
         if (
             !$response instanceof JsonResponse
